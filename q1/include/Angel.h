@@ -10,13 +10,13 @@
 #define __ANGEL_H__
 
 //----------------------------------------------------------------------------
-// 
+//
 // --- Include system headers ---
 //
 
 #include <cmath>
 #include <iostream>
-
+#include<stdio.h>
 //  Define M_PI in the case it's not defined in the math header file
 #ifndef M_PI
 #  define M_PI  3.14159265358979323846
@@ -59,7 +59,7 @@ GLuint InitShader( const char* vertexShaderFile,
 //    DEBUG macro is defined.
 const GLfloat  DivideByZeroTolerance = GLfloat(1.0e-07);
 
-//  Degrees-to-radians constant 
+//  Degrees-to-radians constant
 const GLfloat  DegreesToRadians = M_PI / 180.0;
 
 }  // namespace Angel

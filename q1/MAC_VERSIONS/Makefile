@@ -3,6 +3,6 @@ GL_OPTIONS=-framework OpenGL -framework GLUT
 OPTIONS=$(GCC_OPTIONS) $(GL_OPTIONS)
 
 
-.cpp: 
+example1: 
 	g++ $@.cpp ../Common/initShader.o $(OPTIONS) -o $@  
 
