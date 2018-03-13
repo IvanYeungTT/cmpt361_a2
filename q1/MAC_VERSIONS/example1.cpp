@@ -48,7 +48,7 @@ GLuint ModelView, Projection;
 // Array of rotation angles (in degrees) for each rotation axis
 enum { Base = 0, LowerArm = 1, UpperArm = 2, NumAngles = 3 };
 int      Axis = Base;
-GLfloat  Theta[NumAngles] = { 0.0 };
+GLfloat  Theta[NumAngles] = { 0.1 };
 
 // Menu option values
 const int  Quit = 4;
@@ -277,7 +277,7 @@ main( int argc, char **argv )
 {
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
-    glutInitWindowSize( 512, 512 );
+    glutInitWindowSize( 256, 256 );
     glutCreateWindow( "robot" );
 
     init();
