@@ -3,6 +3,6 @@ GL_OPTIONS=-lGL -lglut -lGLEW
 OPTIONS=$(GCC_OPTIONS) $(GL_OPTIONS)
 
 
-example1: 
+myrobot: 
 	g++ $@.cpp ../Common/initShader.o $(OPTIONS) -o $@  
 

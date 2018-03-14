@@ -420,8 +420,8 @@ init( void )
 
     // Create a vertex array object
     GLuint vao;
-    glGenVertexArraysAPPLE( 1, &vao );
-    glBindVertexArrayAPPLE( vao );
+    glGenVertexArrays( 1, &vao );
+    glBindVertexArray( vao );
 
     // Create and initialize a buffer object
     GLuint buffer;
@@ -478,7 +478,12 @@ main( int argc, char **argv )
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
     glutInitWindowSize( 500, 500 );
+    glutInitContextVersion(3, 2);
+    glutInitContextProfile( GLUT_CORE_PROFILE );
     glutCreateWindow( "robot" );
+
+    glewExperimental = GL_TRUE;
+    glewInit();
 
     init();
 
