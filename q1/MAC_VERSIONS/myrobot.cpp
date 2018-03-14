@@ -72,17 +72,15 @@ GLuint       ModelView, Projection;
 
 #define TORSO_HEIGHT 5.0
 #define TORSO_WIDTH 1.0
-#define UPPER_ARM_HEIGHT 3.0
-#define LOWER_ARM_HEIGHT 2.0
 #define UPPER_LEG_WIDTH  0.5
 #define LOWER_LEG_WIDTH  0.5
 #define LOWER_LEG_HEIGHT 2.0
 #define UPPER_LEG_HEIGHT 3.0
 #define UPPER_LEG_WIDTH  0.5
-#define UPPER_ARM_WIDTH  0.5
-#define LOWER_ARM_WIDTH  0.5
 #define HEAD_HEIGHT 1.5
 #define HEAD_WIDTH 1.0
+#define BOTTOM_HEIGHT 2.0
+#define BOTTOM_WIDTH 5.0
 
 // Set up menu item indices, which we can alos use with the joint angles
 enum {
@@ -90,14 +88,9 @@ enum {
     Head  = 1,
     Head1 = 1,
     Head2 = 2,
-    LeftUpperArm = 3,
-    LeftLowerArm = 4,
-    RightUpperArm = 5,
-    RightLowerArm = 6,
-    LeftUpperLeg = 7,
-    LeftLowerLeg = 8,
-    RightUpperLeg = 9,
-    RightLowerLeg = 10,
+    UpperLeg = 3,
+    LowerLeg = 4,
+    Bottom = 5,
     Quit
 };
 
@@ -107,13 +100,8 @@ theta[NumAngles] = {
     0.0,    // Torso
     0.0,    // Head1
     0.0,    // Head2
-    0.0,    // LeftUpperArm
-    0.0,    // LeftLowerArm
-    0.0,    // RightUpperArm
-    0.0,    // RightLowerArm
     180.0,  // LeftUpperLeg
     0.0,     // LeftLowerLeg
-    180.0,  // RightUpperLeg
     0.0    // RightLowerLeg
 };
 
@@ -213,72 +201,31 @@ head()
     model_view = mvstack.pop();
 }
 
-void
-left_upper_arm()
-{
-    mvstack.push( model_view );
+void sphere(){
+    mat4 instance = Scale(r, r, r);
 
-    mat4 instance = (Translate( 0.0, 0.5 * UPPER_ARM_HEIGHT, 0.0 ) *
-		     Scale( UPPER_ARM_WIDTH,
-			    UPPER_ARM_HEIGHT,
-			    UPPER_ARM_WIDTH ) );
+    if (isStick)
+        fix_view = model_view;
 
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
-
-    model_view = mvstack.pop();
+    glUniformMatrix4fv( ModelView, 1, GL_TRUE, view * fix_view * instance );
+    glDrawArrays( GL_TRIANGLE_STRIP, 0, NumPoints2 );
 }
 
-void
-left_lower_arm()
-{
-    mvstack.push( model_view );
+void sphere_strip(){
+    mat4 instance = Scale(r, r, r);
 
-    mat4 instance = ( Translate( 0.0, 0.5 * LOWER_ARM_HEIGHT, 0.0 ) *
-		      Scale( LOWER_ARM_WIDTH,
-			     LOWER_ARM_HEIGHT,
-			     LOWER_ARM_WIDTH ) );
-    
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
+    if (isStick)
+        fix_view = model_view;
 
-    model_view = mvstack.pop();
+    glUniformMatrix4fv( ModelView, 1, GL_TRUE, view * fix_view * instance );
+    glDrawArrays( GL_TRIANGLE_FAN, 0, NumPoints1 );
 }
 
-void
-right_upper_arm()
-{
-    mvstack.push( model_view );
 
-    mat4 instance = (Translate( 0.0, 0.5 * UPPER_ARM_HEIGHT, 0.0 ) *
-		     Scale( UPPER_ARM_WIDTH,
-			    UPPER_ARM_HEIGHT,
-			    UPPER_ARM_WIDTH ) );
-    
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 
-    model_view = mvstack.pop();
-}
 
 void
-right_lower_arm()
-{
-    mvstack.push( model_view );
-
-    mat4 instance = (Translate( 0.0, 0.5 * LOWER_ARM_HEIGHT, 0.0 ) *
-		     Scale( LOWER_ARM_WIDTH,
-			    LOWER_ARM_HEIGHT,
-			    LOWER_ARM_WIDTH ) );
-    
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
-
-    model_view = mvstack.pop();
-}
-
-void
-left_upper_leg()
+upper_leg()
 {
     mvstack.push( model_view );
 
@@ -294,7 +241,7 @@ left_upper_leg()
 }
 
 void
-left_lower_leg()
+lower_leg()
 {
     mvstack.push( model_view );
 
@@ -310,36 +257,21 @@ left_lower_leg()
 }
 
 void
-right_upper_leg()
+bottom()
 {
     mvstack.push( model_view );
 
-    mat4 instance = (Translate( 0.0, 0.5 * UPPER_LEG_HEIGHT, 0.0 ) *
-		     Scale( UPPER_LEG_WIDTH,
-			    UPPER_LEG_HEIGHT,
-			    UPPER_LEG_WIDTH ) );
 
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
+    mat4 instance = ( Translate( 0.0, 0.5 * BOTTOM_HEIGHT, 0.0 ) *
+                 Scale( BOTTOM_WIDTH,BOTTOM_HEIGHT,BOTTOM_WIDTH ) );
+
+     glUniformMatrix4fv( ModelView, 1, GL_TRUE,  model_view * instance );
+
+     glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 
     model_view = mvstack.pop();
 }
 
-void
-right_lower_leg()
-{
-    mvstack.push( model_view );
-
-    mat4 instance = ( Translate( 0.0, 0.5 * LOWER_LEG_HEIGHT, 0.0 ) *
-		      Scale( LOWER_LEG_WIDTH,
-			     LOWER_LEG_HEIGHT,
-			     LOWER_LEG_WIDTH ) );
-    
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-    glDrawArrays( GL_TRIANGLES, 0, NumVertices );
-
-    model_view = mvstack.pop();
-}
 
 //----------------------------------------------------------------------------
 
@@ -382,55 +314,23 @@ mouse( int button, int state, int x, int y )
 		Translate(0.0, -0.5*HEAD_HEIGHT, 0.0);
 	    break;
 
-	case LeftUpperArm:
-	    nodes[LeftUpperArm].transform = 
-		Translate(-(TORSO_WIDTH+UPPER_ARM_WIDTH),
-			  0.9*TORSO_HEIGHT, 0.0) *
-		RotateX(theta[LeftUpperArm]);
-	    break;
-
-	case RightUpperArm:
-	    nodes[RightUpperArm].transform = 
-		Translate(TORSO_WIDTH+UPPER_ARM_WIDTH, 0.9*TORSO_HEIGHT, 0.0) *
-		RotateX(theta[RightUpperArm]);
-	    break;
-
-	case RightUpperLeg:
-	    nodes[RightUpperLeg].transform = 
-		Translate(TORSO_WIDTH+UPPER_LEG_WIDTH,
-			  0.1*UPPER_LEG_HEIGHT, 0.0) *
-		RotateX(theta[RightUpperLeg]);
-	    break;
-
-	case LeftUpperLeg:
-	    nodes[LeftUpperLeg].transform = 
+	case UpperLeg:
+	    nodes[UpperLeg].transform = 
 		Translate(-(TORSO_WIDTH+UPPER_LEG_WIDTH),
 			  0.1*UPPER_LEG_HEIGHT, 0.0) *
-		RotateX(theta[LeftUpperLeg]);
+		RotateX(theta[UpperLeg]);
 	    break;
 
-	case LeftLowerArm:
-	    nodes[LeftLowerArm].transform = 
-		Translate(0.0, UPPER_ARM_HEIGHT, 0.0) *
-		RotateX(theta[LeftLowerArm]);
-	    break;
-
-	case LeftLowerLeg:
-	    nodes[LeftLowerLeg].transform = 
+	case LowerLeg:
+	    nodes[LowerLeg].transform = 
 		Translate(0.0, UPPER_LEG_HEIGHT, 0.0) *
-		RotateX(theta[LeftLowerLeg]);
+		RotateX(theta[LowerLeg]);
 	    break;
 
-	case RightLowerLeg:
-	    nodes[RightLowerLeg].transform =
-		Translate(0.0, UPPER_LEG_HEIGHT, 0.0) *
-		RotateX(theta[RightLowerLeg]);
-	    break;
-
-	case RightLowerArm:
-	    nodes[RightLowerArm].transform =
-		Translate(0.0, UPPER_ARM_HEIGHT, 0.0) *
-		RotateX(theta[RightLowerArm]);
+	case Bottom:
+	    nodes[Bottom].transform =
+		Translate(0.0,BOTTOM_HEIGHT, 0.0) *
+		RotateX(theta[Bottom]);
 	    break;
     }
 
@@ -491,40 +391,18 @@ initNodes( void )
     m = Translate(0.0, TORSO_HEIGHT+0.5*HEAD_HEIGHT, 0.0) *
 	RotateX(theta[Head1]) *
 	RotateY(theta[Head2]);
-    nodes[Head1] = Node( m, head, &nodes[LeftUpperArm], NULL );
+    nodes[Head1] = Node( m, head, NULL,  &nodes[UpperLeg]);
 
-    m = Translate(-(TORSO_WIDTH+UPPER_ARM_WIDTH), 0.9*TORSO_HEIGHT, 0.0) *
-	RotateX(theta[LeftUpperArm]);
-    nodes[LeftUpperArm] =
-	Node( m, left_upper_arm, &nodes[RightUpperArm], &nodes[LeftLowerArm] );
+    m = Translate(-(0.5*TORSO_WIDTH+0.5*UPPER_LEG_WIDTH), 0.9*UPPER_LEG_HEIGHT, 0.0) *
+	RotateX(theta[UpperLeg]);
+    nodes[UpperLeg] =
+	Node( m, upper_leg, NULL,  &nodes[LowerLeg] );
 
-    m = Translate(TORSO_WIDTH+UPPER_ARM_WIDTH, 0.9*TORSO_HEIGHT, 0.0) *
-	RotateX(theta[RightUpperArm]);
-    nodes[RightUpperArm] =
-	Node( m, right_upper_arm,
-	      &nodes[LeftUpperLeg], &nodes[RightLowerArm] );
+    m = Translate(-(0.5*TORSO_WIDTH+0.5*UPPER_LEG_WIDTH), UPPER_LEG_HEIGHT, 0.0) * RotateX(theta[LowerLeg]);
+    nodes[LowerLeg] = Node( m, lower_leg, NULL, &nodes[Bottom]);
 
-    m = Translate(-(TORSO_WIDTH+UPPER_LEG_WIDTH), 0.1*UPPER_LEG_HEIGHT, 0.0) *
-	RotateX(theta[LeftUpperLeg]);
-    nodes[LeftUpperLeg] =
-	Node( m, left_upper_leg, &nodes[RightUpperLeg], &nodes[LeftLowerLeg] );
-
-    m = Translate(TORSO_WIDTH+UPPER_LEG_WIDTH, 0.1*UPPER_LEG_HEIGHT, 0.0) *
-	RotateX(theta[RightUpperLeg]);
-    nodes[RightUpperLeg] =
-	Node( m, right_upper_leg, NULL, &nodes[RightLowerLeg] );
-
-    m = Translate(0.0, UPPER_ARM_HEIGHT, 0.0) * RotateX(theta[LeftLowerArm]);
-    nodes[LeftLowerArm] = Node( m, left_lower_arm, NULL, NULL );
-
-    m = Translate(0.0, UPPER_ARM_HEIGHT, 0.0) * RotateX(theta[RightLowerArm]);
-    nodes[RightLowerArm] = Node( m, right_lower_arm, NULL, NULL );
-
-    m = Translate(0.0, UPPER_LEG_HEIGHT, 0.0) * RotateX(theta[LeftLowerLeg]);
-    nodes[LeftLowerLeg] = Node( m, left_lower_leg, NULL, NULL );
-
-    m = Translate(0.0, UPPER_LEG_HEIGHT, 0.0) * RotateX(theta[RightLowerLeg]);
-    nodes[RightLowerLeg] = Node( m, right_lower_leg, NULL, NULL );
+    m = Translate(0.0, BOTTOM_HEIGHT, 0.0) * RotateX(theta[Bottom]);
+    nodes[Bottom] = Node( m, bottom, NULL, NULL );
 
 }
 
@@ -615,14 +493,9 @@ main( int argc, char **argv )
     glutAddMenuEntry( "torso", Torso );
     glutAddMenuEntry( "head1", Head1 );
     glutAddMenuEntry( "head2", Head2 );
-    glutAddMenuEntry( "right_upper_arm", RightUpperArm );
-    glutAddMenuEntry( "right_lower_arm", RightLowerArm );
-    glutAddMenuEntry( "left_upper_arm", LeftUpperArm );
-    glutAddMenuEntry( "left_lower_arm", LeftLowerArm );
-    glutAddMenuEntry( "right_upper_leg", RightUpperLeg );
-    glutAddMenuEntry( "right_lower_leg", RightLowerLeg );
-    glutAddMenuEntry( "left_upper_leg", LeftUpperLeg );
-    glutAddMenuEntry( "left_lower_leg", LeftLowerLeg );
+    glutAddMenuEntry( "upper_leg", UpperLeg );
+    glutAddMenuEntry( "lower_leg", LowerLeg );
+    glutAddMenuEntry( "bottom", Bottom );
     glutAddMenuEntry( "quit", Quit );
     glutAttachMenu( GLUT_MIDDLE_BUTTON );
 
