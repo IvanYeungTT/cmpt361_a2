@@ -6,8 +6,14 @@ typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
 const int NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
-const int NumNodes = 11;
-const int NumAngles = 11;
+const int NumNodes = 10;
+const int NumAngles = 10;
+
+bool topv = false;
+double old_x, old_y, old_z, new_x, new_y, new_z;
+
+
+
 
 point4 points[NumVertices];
 color4 colors[NumVertices];
@@ -178,9 +184,12 @@ torso()
 {
     mvstack.push( model_view );
 
-    mat4 instance = ( Translate( 0.0, 0.5 * TORSO_HEIGHT, 0.0 ) *
+    mat4 instance = (Translate( 0.0, 0.5 * HEAD_HEIGHT, 0.0 ) *
+		     Scale( HEAD_WIDTH, HEAD_HEIGHT, HEAD_WIDTH ) );
+
+/*    mat4 instance = ( Translate( 0.0, 0.5 * TORSO_HEIGHT, 0.0 ) *
 		      Scale( TORSO_WIDTH, TORSO_HEIGHT, TORSO_WIDTH ) );
-    
+   */ 
     glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
     glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 
@@ -201,25 +210,25 @@ head()
     model_view = mvstack.pop();
 }
 
-void sphere(){
-    mat4 instance = Scale(r, r, r);
+/*void sphere(){
+    mat4 instance = Scale(1, 1, 1);
 
     if (isStick)
         fix_view = model_view;
 
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, view * fix_view * instance );
+    glUniformMatrix4fv( ModelView, 1, GL_TRUE,  fix_view * instance );
     glDrawArrays( GL_TRIANGLE_STRIP, 0, NumPoints2 );
 }
 
 void sphere_strip(){
-    mat4 instance = Scale(r, r, r);
+    mat4 instance = Scale(1, 1, 1);
 
     if (isStick)
         fix_view = model_view;
 
-    glUniformMatrix4fv( ModelView, 1, GL_TRUE, view * fix_view * instance );
+    glUniformMatrix4fv( ModelView, 1, GL_TRUE, fix_view * instance );
     glDrawArrays( GL_TRIANGLE_FAN, 0, NumPoints1 );
-}
+}*/
 
 
 
@@ -260,8 +269,6 @@ void
 bottom()
 {
     mvstack.push( model_view );
-
-
     mat4 instance = ( Translate( 0.0, 0.5 * BOTTOM_HEIGHT, 0.0 ) *
                  Scale( BOTTOM_WIDTH,BOTTOM_HEIGHT,BOTTOM_WIDTH ) );
 
@@ -279,7 +286,7 @@ void
 display()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    traverse( &nodes[Torso] );
+    traverse( &nodes[Head] );
     glutSwapBuffers();
 }
 
@@ -384,21 +391,19 @@ void
 initNodes( void )
 {
     mat4  m;
-    
+   /* 
     m = RotateY( theta[Torso] );
     nodes[Torso] = Node( m, torso, NULL, &nodes[Head1] );
-
-    m = Translate(0.0, TORSO_HEIGHT+0.5*HEAD_HEIGHT, 0.0) *
-	RotateX(theta[Head1]) *
-	RotateY(theta[Head2]);
+*/
+    m = RotateX(theta[Head1]) * RotateY(theta[Head2]);
     nodes[Head1] = Node( m, head, NULL,  &nodes[UpperLeg]);
 
-    m = Translate(-(0.5*TORSO_WIDTH+0.5*UPPER_LEG_WIDTH), 0.9*UPPER_LEG_HEIGHT, 0.0) *
+    m = Translate(-(0.5*HEAD_WIDTH+0.5*UPPER_LEG_WIDTH), 0.9*UPPER_LEG_HEIGHT, 0.0) *
 	RotateX(theta[UpperLeg]);
     nodes[UpperLeg] =
 	Node( m, upper_leg, NULL,  &nodes[LowerLeg] );
 
-    m = Translate(-(0.5*TORSO_WIDTH+0.5*UPPER_LEG_WIDTH), UPPER_LEG_HEIGHT, 0.0) * RotateX(theta[LowerLeg]);
+    m = Translate(-(0.5*HEAD_WIDTH+0.5*UPPER_LEG_WIDTH), UPPER_LEG_HEIGHT, 0.0) * RotateX(theta[LowerLeg]);
     nodes[LowerLeg] = Node( m, lower_leg, NULL, &nodes[Bottom]);
 
     m = Translate(0.0, BOTTOM_HEIGHT, 0.0) * RotateX(theta[Bottom]);
@@ -490,7 +495,7 @@ main( int argc, char **argv )
     glutMouseFunc( mouse );
 
     glutCreateMenu( menu );
-    glutAddMenuEntry( "torso", Torso );
+//    glutAddMenuEntry( "torso", Torso );
     glutAddMenuEntry( "head1", Head1 );
     glutAddMenuEntry( "head2", Head2 );
     glutAddMenuEntry( "upper_leg", UpperLeg );
